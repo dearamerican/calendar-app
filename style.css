@@ -1,0 +1,102 @@
+h1 {
+  color: #4fad88; /*highlight color*/
+  padding: 20px;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0px;
+  font-size: 11px;
+}
+
+#time-container {
+  color: #d8d8d8;
+  width: 70px;
+  height: auto;
+  display: inline-block;
+  float: left;
+  padding: 0 10px;
+  position: relative;
+  top: -3px;
+}
+
+.half-hour-increment {
+  height: 30px;
+  width: 100%;
+  text-align: right;
+/*  position: relative;
+  top: -3px;*/
+}
+
+.hour {
+  color: #979797;
+  font-weight: 900;
+  vertical-align: top;
+  position: relative;
+  top: -3px;
+}
+
+.last {
+  position: relative;
+  top: -4px;
+}
+
+.meridiem {
+    color: #aaaaaa;
+  font-size: 8px;
+  font-weight: normal;
+  position: relative;
+  top: 3px;
+}
+
+.half-hour {
+  color: #aaaaaa;
+  font-size: 8px;
+  vertical-align: top;
+}
+
+#calendar-container {
+  width: 600px;
+  padding: 0 10px;
+  height: 720px;
+  background-color: #ececec;
+  border-left: 1px solid #d8d8d8;
+  display: inline-block;
+  position: relative;
+}
+
+.event-row {
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  width: 100%;
+  max-width: 600px;
+}
+
+.event {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  box-shadow: inset 4px 0 #4fad88;
+  border-right: 1px solid #d8d8d8; /*should these be #aaaaaa?*/
+  border-top: 1px solid #d8d8d8;
+  border-bottom: 1px solid #d8d8d8;
+  padding: 6px 10px;
+}
+
+.event .item {
+  color: #4fad88;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.event .location {
+  color: #979797;
+}
+
+.placeholder {
+  width: 100%;
+  height: auto;
+  background-color: transparent;
+}
