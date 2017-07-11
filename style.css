@@ -24,8 +24,6 @@ body {
   height: 30px;
   width: 100%;
   text-align: right;
-/*  position: relative;
-  top: -3px;*/
 }
 
 .hour {
@@ -42,7 +40,7 @@ body {
 }
 
 .meridiem {
-    color: #aaaaaa;
+  color: #aaaaaa;
   font-size: 8px;
   font-weight: normal;
   position: relative;
@@ -65,21 +63,12 @@ body {
   position: relative;
 }
 
-.event-row {
-  height: auto;
-  display: flex;
-  flex-direction: row;
-  position: absolute;
-  width: 100%;
-  max-width: 600px;
-}
-
 .event {
-  width: 100%;
+  position: absolute;
   box-sizing: border-box;
   background-color: #ffffff;
   box-shadow: inset 4px 0 #4fad88;
-  border-right: 1px solid #d8d8d8; /*should these be #aaaaaa?*/
+  border-right: 1px solid #d8d8d8;
   border-top: 1px solid #d8d8d8;
   border-bottom: 1px solid #d8d8d8;
   padding: 6px 10px;
@@ -93,10 +82,4 @@ body {
 
 .event .location {
   color: #979797;
-}
-
-.placeholder {
-  width: 100%;
-  height: auto;
-  background-color: transparent;
 }

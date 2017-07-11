@@ -18,31 +18,14 @@ var events = [
     end: 620
   },
   {
-    item: 'Sample Item TEST TO REMOVE',
-    location: 'Sample Location',
-    start: 560,
-    end: 620
-  },
-  {
     item: 'Sample Item',
     location: 'Sample Location',
     start: 610,
     end: 670
-  },
-  {
-    item: 'Sample TEST640',
-    location: 'Sample Location',
-    start: 640,
-    end: 680
-  },
-  {
-    item: 'Sample TEST600',
-    location: 'Sample Location',
-    start: 600,
-    end: 720
-  },
+  }
 ];
 
+// Calendar times
 var getTwelveHourClockTime = function(num) {
   var hour;
   var meridiem = 'AM';
@@ -102,77 +85,16 @@ var getTimeIncrements = function(startTime) {
   });
 };
 
-var Row = function() {
-  this.start = null;
-  this.end = null;
-  this.eventIds = [];
-  this.sharedWith = 1;
-};
-
-var checkForSharedRow = function(events, currIndex, currStart, currEnd) {
-  var numEvents = 1;
-  events.forEach(function(event, index) {
-    if (index !== currIndex && event.end < currEnd && event.end > currStart) {
-      ++numEvents;
-    }
-  });
-  return numEvents;
-};
-
-var setEventRows = function(events) {
-  var currEvent;
-  var nextEvent;
-  var rows = [];
-  var currRow = new Row();
-  for (var i = 0; i < events.length; i++) {
-    currEvent = events[i];
-    nextEvent = events[i + 1];
-    // If it's the first event of each event row, establish # of events/row.
-    if (currRow.eventIds.length < 1) {
-      currRow.sharedWith = currRow.eventIds.length;
-      // checkForSharedRow(events, i, currEvent.start,
-      //   currEvent.end);
-    }
-    currRow.eventIds.push(i);
-    currRow.start = currRow.start ? currRow.start : currEvent.start;
-    currRow.end = currRow.end ? currRow.end : currEvent.end;
-    if (nextEvent && nextEvent.start < currRow.end) {
-      // Add to currRow at the top of the next iteration.
-    } else {
-      // Add currRow to rows array and create a new row object.
-      rows.push(currRow);
-      currRow = new Row();
-    }
-  }
-  console.log(rows);
-  return rows;
-};
-
-var eventAppearsInRow = function(eventId, currRow) {
-  return currRow.eventIds.indexOf(eventId) > -1;
-};
-
-var layOutDay = function(events) {
-  // Ensure events are sorted by start time, earliest to latest.
-  var eventsCopy = events.sort(function(a, b) {
-    return a.start - b.start;
-  });
-  var rows = setEventRows(eventsCopy);
-  var event;
-  var i;
-  var rowDiv;
-  var eventDiv;
-  var itemDiv;
-  var locationDiv;
-  var itemText;
-  var locationText;
-  rows.forEach(function(row) {
-    rowDiv = document.createElement("div");
-    rowDiv.className = "event-row";
-    rowDiv.style.cssText += 'top:' + row.start;
-    for (i = 0; i < eventsCopy.length; i++) {
-      event = eventsCopy[i];
-      if (eventAppearsInRow(i, row)) {
+// Calendar events
+var CAL_WIDTH = 600;
+var columns = [];
+var lastEventEnding = null;
+var populateEvents = function(columns, calWidth) {
+  var numEvents = columns.length;
+  for (var i = 0; i < columns.length; i++) {
+    var col = columns[i];
+    for (var j = 0; j < col.length; j++) {
+      var event = col[j];
         eventDiv = document.createElement("div");
         itemDiv = document.createElement("div");
         locationDiv = document.createElement("div");
@@ -180,7 +102,6 @@ var layOutDay = function(events) {
         locationText = document.createTextNode(event.location);
         itemDiv.appendChild(itemText);
         eventDiv.className += 'event';
-        eventDiv.style.cssText += 'margin-top:' + (event.start - row.start);
         itemDiv.className += 'item';
         locationDiv.className += 'location';
         locationDiv.appendChild(locationText);
@@ -188,12 +109,54 @@ var layOutDay = function(events) {
         eventDiv.appendChild(locationDiv);
         eventDiv.style.cssText += 'height:' + (event.end - event.start);
         eventDiv.style.cssText += 'top:' + event.start;
-        eventDiv.style.cssText += 'width:' + (100/row.sharedWith) + '%';
-        rowDiv.appendChild(eventDiv);
+        eventDiv.style.cssText += 'left:' + (10 + ((i/numEvents) * 600)) + 'px';
+        eventDiv.style.cssText += 'width:' + (calWidth/numEvents) + 'px';
+        document.getElementById('calendar-container').appendChild(eventDiv);
+    }
+  }
+};
+var collidesWith = function(a, b) {
+  return a.end > b.start && a.start < b.end;
+};
+
+var layOutDay = function(events) {
+  // Ensure events are sorted by start time, earliest to latest, and then sorted
+  // by ending time.
+  events.sort(function(e1, e2) {
+    if (e1.start < e2.start) return -1;
+    if (e1.start > e2.start) return 1;
+    if (e1.end < e2.end) return -1;
+    if (e1.end > e2.end) return 1;
+    return 0;
+  });
+  events.forEach(function(e, index) {
+    var col;
+    var addedToCal;
+    if (lastEventEnding !== null && e.start >= lastEventEnding) {
+      populateEvents(columns, CAL_WIDTH);
+      columns = [];
+      lastEventEnding = null;
+    }
+    addedToCal = false;
+    for (var i = 0; i < columns.length; i++) {
+      col = columns[i];
+      if (!collidesWith(col[col.length - 1], e)) {
+        col.push(e);
+        addedToCal = true;
+        break;
       }
     }
-    document.getElementById('calendar-container').appendChild(rowDiv);
+    if (!addedToCal) {
+      // create a new column with the event positioned within it.
+      columns.push([e]);
+    }
+    if (lastEventEnding === null || e.end > lastEventEnding) {
+      lastEventEnding = e.end;
+    }
   });
+  if (columns.length > 0) {
+    populateEvents(columns, CAL_WIDTH);
+  }
 };
 
 window.onload = function() {
